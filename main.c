@@ -508,7 +508,7 @@ load_music(void)
     // Specify filter (file and channel number to actually read data from)
     CdlFILTER filter;
     filter.file = 1;
-    filter.chan = 0;
+    filter.chan = 1; // Choose song 0-3
     CdControlF(CdlSetfilter, (u_char*) &filter);
 
     // File position on CD

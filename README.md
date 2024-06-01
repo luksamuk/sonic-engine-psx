@@ -1,5 +1,9 @@
 # sonic-engine-psx
 
+Disclaimer: I am not the original owner of any songs here, nor of the Psy-Q SDK, nor of Sonic The Hedgehog.
+
+This was built with educational purposes only.
+
 ## Building
 
 Build the application's `ps-exe`:
@@ -48,6 +52,12 @@ Tweak `ac` to change mono/stereo and `-ar` to reduce or increase audio quality (
 psxavenc -f 37800 -t xa -b 4 -c 2 -F 1 -C 0 file.wav file.xa
 ```
 
+Here's how I'd convert a directory full of .WAV files:
+
+```bash
+for f in *.WAV; do psxavenc -f 37800 -t xa -b 4 -c 2 -F 1 -C 0 "$f" "${f%%.WAV}.XA"; done
+```
+
 ### Interleaving individual .XA files
 
 First, create a file containing the interleave mapping (e.g. `xainterleave.txt`). The file layout should look somewhat like this for an individual song:
@@ -58,8 +68,18 @@ First, create a file containing the interleave mapping (e.g. `xainterleave.txt`)
 1 null
 1 null
 ```
-
 In this case, we're building a .XA file with 4 channels, where 3 channels remain unused. Furthermore, using a 1x CD read speed (when playing the song) should suffice.
+
+...or, if you were using two songs:
+
+```
+1 xa file1.xa 1 0
+1 xa file2.xa 1 1
+1 null
+1 null
+```
+
+Notice how we change the channel number for each.
 
 Now interleave the XA:
 
@@ -74,3 +94,4 @@ That's it. All that remains is adding `FINAL.XA` to `CDLAYOUT.XML` so it packs n
 <file name="FINAL.XA" type="xa" source="FINAL.XA" />
 ```
 
+There is a proper tutorial on using .XA [here](https://psx.arthus.net/sdk/Psy-Q/DOCS/XATUT.pdf).
