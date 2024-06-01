@@ -4,6 +4,10 @@ Disclaimer: I am not the original owner of any songs here, nor of the Psy-Q SDK,
 
 This was built with educational purposes only.
 
+![Screenshot of Sonic walking on screen.](./img/ss.png)
+
+You can play this little game on an online emulator (with an opensource BIOS implementation) [on this link](https://luksamuk.codes/static/psx/?game=sonic).
+
 ## Building
 
 Build the application's `ps-exe`:
