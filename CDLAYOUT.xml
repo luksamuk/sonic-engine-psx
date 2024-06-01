@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iso_project image_name="GAME.iso" cue_sheet="GAME.cue" no_xa="0">
+  <track type="data">
+    <identifiers
+	system        = "PLAYSTATION"
+	application   = "PLAYSTATION"
+	volume        = "SONICGAME"
+	volume_set    = "SONICGAME"
+	publisher     = "ME"
+	data_preparer = "MKPSXISO"
+	copyright     = "COPYLEFT" />
+    <license file="LCNSFILE/LICENSEA.DAT" />
+    <directory_tree>
+      <file name="SYSTEM.CNF" type="data" source="SYSTEM.TXT" />
+      <file name="MAIN.EXE" type="data" source="sonic-engine-psx.ps-exe" />
+      <dir name="TEXTURES">
+        <file name="SONIC-0.TIM" type="data" source="assets/textures/tim/sonic-0.tim" />
+        <file name="SONIC-1.TIM" type="data" source="assets/textures/tim/sonic-1.tim" />
+      </dir>
+      <dir name="AUDIO">
+        <file name="BGM001.XA" type="xa" source="assets/audio/BGM001.XA" />
+      </dir>
+    </directory_tree>
+  </track>
+</iso_project>
