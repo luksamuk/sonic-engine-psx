@@ -1,0 +1,4 @@
+1 xa precooked/CYBER.XA  1 0
+1 xa precooked/HERO.XA   1 1
+1 xa precooked/HYPER.XA  1 2
+1 xa precooked/WALKIN.XA 1 3

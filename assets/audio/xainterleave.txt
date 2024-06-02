@@ -1,4 +1,0 @@
-1 xa CYBER.XA  1 0
-1 xa HERO.XA   1 1
-1 xa HYPER.XA  1 2
-1 xa WALKIN.XA 1 3

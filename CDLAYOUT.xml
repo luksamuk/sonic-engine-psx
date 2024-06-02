@@ -17,8 +17,11 @@
         <file name="SONIC-0.TIM" type="data" source="assets/textures/tim/sonic-0.tim" />
         <file name="SONIC-1.TIM" type="data" source="assets/textures/tim/sonic-1.tim" />
       </dir>
-      <dir name="AUDIO">
-        <file name="BGM001.XA" type="xa" source="assets/audio/BGM001.XA" />
+      <dir name="BGM">
+	      <file name="BGM001.XA" type="xa" source="assets/audio/bgm/BGM001.XA" />
+      </dir>
+      <dir name="SFX">
+	      <file name="JUMP.VAG" type="data" source="assets/audio/sfx/test.vag" />
       </dir>
     </directory_tree>
   </track>
