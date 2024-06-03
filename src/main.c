@@ -85,6 +85,8 @@ u_short ground    = 0;
 u_short roll      = 0;
 u_short stopstate = 0;
 
+VAGSound sfx_jump;
+
 // ------------------
 
 static int looked = 0;
@@ -250,8 +252,7 @@ screen_update()
         roll = 1;
         spd.vy = Y_JUMP_STRENGTH;
         framenum = 0; // reset anim
-        SpuSetKey(SPU_ON, SPU_0CH);
-        printf("Jump\n");
+        audio_vag_play(&sfx_jump);
     }
 
     if(!ground
@@ -290,67 +291,6 @@ screen_update()
     }
 }
 
-void
-load_sfx(unsigned long voice, char *filename)
-{
-    SpuVoiceAttr  spuvoice;
-    u_long *bytes;
-    u_long length;
-    u_long vag_addr;
-
-    // Load .VAG file
-    bytes = (u_long *)file_read(filename, &length);
-    printf("Read %lu bytes from %s (ptr %p)\n", length, filename, bytes);
-    
-    vag_addr = SpuMalloc(length);
-
-    if(SpuSetTransferStartAddr(vag_addr) == 0) {
-        printf("Error setting transfer start address for %s!\n", filename);
-    }
-    printf("SPU .VAG address: 0x%x\n", vag_addr);
-    printf("SPU given .VAG start address: 0x%x\n", SpuGetTransferStartAddr());
-
-    u_long transferred = SpuWrite((u_char*)bytes, length);
-    printf("Transfering %ld bytes to the SPU. Transfered so far: %ld bytes\n", length, transferred);
-    SpuIsTransferCompleted(SPU_TRANSFER_WAIT); // Await completion
-    printf("SPU transfer completed.\n");
-    free(bytes);
-
-    // Define voice common attributes
-    spuvoice.mask = (
-        SPU_VOICE_VOLL |
-        SPU_VOICE_VOLR |
-        SPU_VOICE_PITCH |
-        SPU_VOICE_WDSA |
-        SPU_VOICE_ADSR_AMODE |
-        SPU_VOICE_ADSR_SMODE |
-        SPU_VOICE_ADSR_RMODE |
-        SPU_VOICE_ADSR_AR |
-        SPU_VOICE_ADSR_DR |
-        SPU_VOICE_ADSR_SR |
-        SPU_VOICE_ADSR_RR |
-        SPU_VOICE_ADSR_SL
-    );
-
-    // using channel 2 so it doesn't conflict with XA playback
-    spuvoice.voice = voice;
-    spuvoice.volume.left = 0x1fff;
-    spuvoice.volume.right = 0x1fff;
-    spuvoice.pitch = 0x1000;
-    spuvoice.addr = vag_addr;
-    spuvoice.a_mode = SPU_VOICE_LINEARIncN;
-    spuvoice.s_mode = SPU_VOICE_LINEARIncN;
-    spuvoice.r_mode = SPU_VOICE_LINEARDecN;
-    spuvoice.ar = 0x0;
-    spuvoice.dr = 0x0;
-    spuvoice.sr = 0x0;
-    spuvoice.rr = 0x0;
-    spuvoice.sl = 0xf;
-
-    SpuSetVoiceAttr(&spuvoice);
-    SpuSetKey(SPU_ON, voice);
-}
-
 int main(void) {
     InitHeap3((unsigned long *) (&__heap_start), (&__sp - 0x5000) - &__heap_start);
 
@@ -373,7 +313,7 @@ int main(void) {
 
     load_texture("\\TEXTURES\\SONIC-0.TIM;1", &sonic0_mode, &sonic0_tpage, &sonic0_clut);
     load_texture("\\TEXTURES\\SONIC-1.TIM;1", &sonic1_mode, &sonic1_tpage, &sonic1_clut);
-    load_sfx(SPU_0CH, "\\SFX\\JUMP.VAG;1");
+    audio_vag_load("\\SFX\\JUMP.VAG;1", SPU_0CH, &sfx_jump);
     audio_xa_stream("\\BGM\\BGM001.XA;1", 0, 0);
 
     while (1) {
@@ -382,7 +322,7 @@ int main(void) {
 
         ot_clear();
 
-        FntPrint("X     %08x\nZ     %08x\nD     %08x\n\n", position.vx, position.vz, position.vy);
+        FntPrint("X     %08x\nZ     %08x\nCAM-Z %08x\n\n", position.vx, position.vz, camera.position.vy);
         FntPrint("SPD.X %08x\nSPD.Y %08x\n", spd.vx, spd.vy);
         FntPrint("ACC.X %08x\nACC.Y %08x\n", acc.vx, acc.vy);
 
