@@ -1,16 +1,10 @@
 #include <libetc.h>
-#include <libgpu.h>
-#include <libgte.h>
 #include <stdlib.h>
 #include <libcd.h>
-#include <stdio.h>
-#include <libsnd.h>
 #include <libspu.h>
-#include <libmcx.h>
 
 #include "display.h"
 #include "render.h"
-#include "util.h"
 #include "camera.h"
 #include "audio.h"
 
@@ -313,7 +307,7 @@ int main(void) {
 
     load_texture("\\TEXTURES\\SONIC-0.TIM;1", &sonic0_mode, &sonic0_tpage, &sonic0_clut);
     load_texture("\\TEXTURES\\SONIC-1.TIM;1", &sonic1_mode, &sonic1_tpage, &sonic1_clut);
-    audio_vag_load("\\SFX\\JUMP.VAG;1", SPU_0CH, &sfx_jump);
+    sfx_jump = audio_vag_load("\\SFX\\JUMP.VAG;1", SPU_0CH);
     audio_xa_stream("\\BGM\\BGM001.XA;1", 0, 0);
 
     while (1) {
@@ -330,6 +324,8 @@ int main(void) {
         screen_draw();
         FntFlush(-1);
     }
+
+    audio_vag_unload(&sfx_jump);
 
     return 0;
 }

@@ -3,6 +3,7 @@
 #include <libsnd.h>
 #include <libcd.h>
 #include <stdio.h>
+#include <malloc.h>
 
 #include "util.h"
 
@@ -120,40 +121,39 @@ send_vag_to_spu(u_long size, u_char *data)
     printf("Transferred %lu bytes to the SPU.\n", transferred);
 }
 
-u_long
-spu_vag_transfer(VAGSound *sound)
+void
+spu_vag_transfer(VAGSound *sound, u_char *file)
 {
-    const VAGHeader *header = (VAGHeader *)sound->file;
+    const VAGHeader *header = (VAGHeader *)file;
     u_int pitch = (SWAP_ENDIAN32(header->samplingFrequency) << 12) / 44100L;
     u_long addr = SpuMalloc(SWAP_ENDIAN32(header->dataSize));
     SpuSetTransferStartAddr(addr);
-    send_vag_to_spu(SWAP_ENDIAN32(header->dataSize), sound->file);
+    send_vag_to_spu(SWAP_ENDIAN32(header->dataSize), file);
     set_voice_attr(pitch, sound->spu_channel, addr);
-    return addr;
+    sound->spu_address = addr;
 }
 
-void
-audio_vag_load(char *filename, u_long voice, VAGSound *out)
+VAGSound
+audio_vag_load(char *filename, u_long voice)
 {
-    // Load file from CD
+    VAGSound out = {0, 0};
     u_long *bytes, length;
+
+    // Load file from CD
     bytes = (u_long *)file_read(filename, &length);
     printf("Read %lu bytes from %s (ptr %p)\n", length, filename, bytes);
 
     // Create VAGSound
-    out->file = (u_char *)bytes;
-    out->spu_address = 0;
-    out->spu_channel = voice;
-    u_long spu_addr = spu_vag_transfer(out);
-    out->spu_address = spu_addr;
+    out.spu_channel = voice;
+    spu_vag_transfer(&out, (u_char *)bytes);
+
+    free3(bytes);
+    return out;
 }
 
 void
 audio_vag_play(VAGSound *sound)
 {
-    // TODO: By then I only need the channel and maybe the
-    // sound address on the SPU so I can deallocate it later.
-    // Refactor the VAGSound struct.
     SpuVoiceAttr attr;
     attr.mask = SPU_VOICE_VOLL | SPU_VOICE_VOLR;
     attr.voice = sound->spu_channel;
@@ -161,4 +161,11 @@ audio_vag_play(VAGSound *sound)
     attr.volume.right = 0x6000;
     SpuSetVoiceAttr(&attr);
     SpuSetKey(SPU_ON, sound->spu_channel);
+}
+
+void
+audio_vag_unload(VAGSound *snd)
+{
+    SpuFree(snd->spu_address);
+    snd->spu_address = 0;
 }
