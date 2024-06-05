@@ -308,7 +308,7 @@ int main(void) {
     load_texture("\\TEXTURES\\SONIC-0.TIM;1", &sonic0_mode, &sonic0_tpage, &sonic0_clut);
     load_texture("\\TEXTURES\\SONIC-1.TIM;1", &sonic1_mode, &sonic1_tpage, &sonic1_clut);
     sfx_jump = audio_vag_load("\\SFX\\JUMP.VAG;1", SPU_0CH);
-    audio_xa_stream("\\BGM\\BGM001.XA;1", 0, 0);
+    audio_xa_stream("\\BGM\\BGM001.XA;1", 0, 1);
 
     while (1) {
         padstate = 0;
